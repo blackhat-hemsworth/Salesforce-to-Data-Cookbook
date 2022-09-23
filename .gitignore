@@ -1,0 +1,9 @@
+--*.csv
+--*.zip
+allegedly-every-object-and-field-in-EDA-production-salesforce.json
+*.html
+*.Rhistory
+
+--DFformat/
+--picklists/
+--unaltered/

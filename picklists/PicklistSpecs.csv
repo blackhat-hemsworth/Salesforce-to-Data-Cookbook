@@ -1,0 +1,153 @@
+Parent Object,Field Name,Field Label,Type,Help Text,Label - Value
+Contact,CleanStatus,Clean Status,picklist,,"In Sync - Matched
+Different - Different
+Reviewed - Acknowledged
+Not Found - NotFound
+Inactive - Inactive
+Not Compared - Pending
+Select Match - SelectMatch
+Skipped - Skipped"
+Contact,LeadSource,Lead Source,picklist,,"Web - Web
+Phone Inquiry - Phone Inquiry
+Partner Referral - Partner Referral
+Purchased List - Purchased List
+Other - Other"
+Contact,MailingGeocodeAccuracy,Mailing Geocode Accuracy,picklist,,"Address - Address
+NearAddress - NearAddress
+Block - Block
+Street - Street
+ExtendedZip - ExtendedZip
+Zip - Zip
+Neighborhood - Neighborhood
+City - City
+County - County
+State - State
+Unknown - Unknown"
+Contact,OtherGeocodeAccuracy,Other Geocode Accuracy,picklist,,"Address - Address
+NearAddress - NearAddress
+Block - Block
+Street - Street
+ExtendedZip - ExtendedZip
+Zip - Zip
+Neighborhood - Neighborhood
+City - City
+County - County
+State - State
+Unknown - Unknown"
+Contact,Salutation,Salutation,picklist,,"Mr. - Mr.
+Ms. - Ms.
+Mrs. - Mrs.
+Dr. - Dr.
+Prof. - Prof."
+Lead,CleanStatus,Clean Status,picklist,,"In Sync - Matched
+Different - Different
+Reviewed - Acknowledged
+Not Found - NotFound
+Inactive - Inactive
+Not Compared - Pending
+Select Match - SelectMatch
+Skipped - Skipped"
+Lead,GeocodeAccuracy,Geocode Accuracy,picklist,,"Address - Address
+NearAddress - NearAddress
+Block - Block
+Street - Street
+ExtendedZip - ExtendedZip
+Zip - Zip
+Neighborhood - Neighborhood
+City - City
+County - County
+State - State
+Unknown - Unknown"
+Lead,Industry,Industry,picklist,,"Agriculture - Agriculture
+Apparel - Apparel
+Banking - Banking
+Biotechnology - Biotechnology
+Chemicals - Chemicals
+Communications - Communications
+Construction - Construction
+Consulting - Consulting
+Education - Education
+Electronics - Electronics
+Energy - Energy
+Engineering - Engineering
+Entertainment - Entertainment
+Environmental - Environmental
+Finance - Finance
+Food & Beverage - Food & Beverage
+Government - Government
+Healthcare - Healthcare
+Hospitality - Hospitality
+Insurance - Insurance
+Machinery - Machinery
+Manufacturing - Manufacturing
+Media - Media
+Not For Profit - Not For Profit
+Recreation - Recreation
+Retail - Retail
+Shipping - Shipping
+Technology - Technology
+Telecommunications - Telecommunications
+Transportation - Transportation
+Utilities - Utilities
+Other - Other"
+Lead,LeadSource,Lead Source,picklist,,"Web - Web
+Phone Inquiry - Phone Inquiry
+Partner Referral - Partner Referral
+Purchased List - Purchased List
+Other - Other"
+Lead,Rating,Rating,picklist,,"Hot - Hot
+Warm - Warm
+Cold - Cold"
+Lead,Salutation,Salutation,picklist,,"Mr. - Mr.
+Ms. - Ms.
+Mrs. - Mrs.
+Dr. - Dr.
+Prof. - Prof."
+Lead,Status,Status,picklist,,"Open - Not Contacted - Open - Not Contacted
+Working - Contacted - Working - Contacted
+Closed - Converted - Closed - Converted
+Closed - Not Converted - Closed - Not Converted"
+Task,CallType,Call Type,picklist,,"Internal - Internal
+Inbound - Inbound
+Outbound - Outbound"
+Task,Priority,Priority,picklist,,"High - High
+Normal - Normal
+Low - Low"
+Task,RecurrenceInstance,Recurrence Instance,picklist,,"1st - First
+2nd - Second
+3rd - Third
+4th - Fourth
+last - Last"
+Task,RecurrenceMonthOfYear,Recurrence Month of Year,picklist,,"January - January
+February - February
+March - March
+April - April
+May - May
+June - June
+July - July
+August - August
+September - September
+October - October
+November - November
+December - December"
+Task,RecurrenceRegeneratedType,Repeat This Task,picklist,,"After due date - RecurrenceRegenerateAfterDueDate
+After date completed - RecurrenceRegenerateAfterToday
+(Task Closed) - RecurrenceRegenerated"
+Task,RecurrenceTimeZoneSidKey,Recurrence Time Zone,picklist,,100+ values
+Task,RecurrenceType,Recurrence Type,picklist,,"Recurs Daily - RecursDaily
+Recurs Every Weekday - RecursEveryWeekday
+Recurs Monthly - RecursMonthly
+Recurs Monthly Nth - RecursMonthlyNth
+Recurs Weekly - RecursWeekly
+Recurs Yearly - RecursYearly
+Recurs Yearly Nth - RecursYearlyNth"
+Task,Status,Status,picklist,,"Not Started - Not Started
+In Progress - In Progress
+Completed - Completed
+Waiting on someone else - Waiting on someone else
+Deferred - Deferred"
+Task,TaskSubtype,Task Subtype,picklist,,"Task - Task
+Email - Email
+List Email - ListEmail
+Cadence - Cadence
+Call - Call"
