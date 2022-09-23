@@ -109,7 +109,7 @@ EDA,Column,MasterRecordId,Table,Lead,,,reference,18.0,,,,True,,,,MasterRecord,Le
 EDA,Column,MobilePhone,Table,Lead,,,phone,40.0,,,,True,,,,,,
 EDA,Column,Name,Table,Lead,,,string,121.0,,,,False,,,,,,
 EDA,Column,NumberOfEmployees,Table,Lead,,,int,0.0,,,,True,,,,,,
-EDA,Column,OwnerId,Table,Lead,,,reference,18.0,,,,False,,,,Owner,Group,Id
+EDA,Column,OwnerId,Table,Lead,,,reference,18.0,,,,False,,,,Owner,User,Id
 EDA,Column,PartnerAccountId,Table,Lead,,,reference,18.0,,,,True,,,,PartnerAccount,Account,Id
 EDA,Column,Phone,Table,Lead,,,phone,40.0,,,,True,,,,,,
 EDA,Column,PhotoUrl,Table,Lead,,,url,255.0,,,,True,,,,,,
@@ -142,7 +142,7 @@ EDA,Column,IsRecurrence,Table,Task,,,boolean,0.0,,,,False,,,,,,
 EDA,Column,IsReminderSet,Table,Task,,,boolean,0.0,,,,False,,,,,,
 EDA,Column,LastModifiedById,Table,Task,,,reference,18.0,,,,False,,,,LastModifiedBy,User,Id
 EDA,Column,LastModifiedDate,Table,Task,,,datetime,0.0,,,,False,,,,,,
-EDA,Column,OwnerId,Table,Task,,,reference,18.0,,,,False,,,,Owner,Group,Id
+EDA,Column,OwnerId,Table,Task,,,reference,18.0,,,,False,,,,Owner,User,Id
 EDA,Column,Priority,Table,Task,,Picklist Items: High - High/Normal - Normal/Low - Low,picklist,20.0,,,,False,,,,,,
 EDA,Column,RecurrenceActivityId,Table,Task,,,reference,18.0,,,,True,,,,,Task,Id
 EDA,Column,RecurrenceDayOfMonth,Table,Task,,,int,0.0,,,,True,,,,,,
@@ -160,5 +160,5 @@ EDA,Column,Status,Table,Task,,Picklist Items: Not Started - Not Started/In Progr
 EDA,Column,Subject,Table,Task,,,combobox,255.0,,,,True,,,,,,
 EDA,Column,SystemModstamp,Table,Task,,,datetime,0.0,,,,False,,,,,,
 EDA,Column,TaskSubtype,Table,Task,,Picklist Items: Task - Task/Email - Email/List Email - ListEmail/Cadence - Cadence/Call - Call,picklist,40.0,,,,True,,,,,,
-EDA,Column,WhatId,Table,Task,,,reference,18.0,,,,True,,,,What,Account,Id
+EDA,Column,WhatId,Table,Task,,,reference,18.0,,,,True,,,,What,Contact,Id
 EDA,Column,WhoId,Table,Task,,,reference,18.0,,,,True,,,,Who,Contact,Id

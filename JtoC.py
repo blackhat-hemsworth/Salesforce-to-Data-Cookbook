@@ -36,6 +36,10 @@ def getType(row):
 # Used to reduce reference column to first entry -- not ideal but DC's 
 # ERP diagram/linking only works with one table referenced per FK
 def getRef(row):
+    if "User" in str(row["referenceTo"]):
+        return "User"    # picking User over other objects to handle User, Group as assigned to keys (org always uses User)
+    if "Contact" in str(row["referenceTo"]):
+        return "Contact" # picking Contact over other objects to handle Lead, Contact situation (org almost always uses Contact)
     return str(row["referenceTo"]).split()[0].replace("'","").replace("[","").replace("]","").replace(",","") # from SF some objects point at all other objects -- which breaks cookbook
 # Sets "Id" as Ref Col to reflect SF convention
 def getRefCol(row):
@@ -130,8 +134,7 @@ for table in sch.keys():
         dfU = pd.concat([dfU, dfParent], axis=0, ignore_index=True)
         dfU = pd.concat([dfU,dfKids], axis=0, ignore_index=True)
 
-### after loop
-
+### saving output to csv 
 dfU.to_csv("DFformat/EDA.csv", index=False)
 dfPL.to_csv("picklists/PicklistSpecs.csv", index=False)
 shutil.make_archive("JSON_fields_unaltered", 'zip', "unaltered")
