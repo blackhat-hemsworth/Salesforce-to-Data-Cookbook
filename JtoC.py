@@ -36,6 +36,10 @@ def getType(row):
 # Used to reduce reference column to first entry -- not ideal but DC's 
 # ERP diagram/linking only works with one table referenced per FK
 def getRef(row):
+    if "User" in str(row["referenceTo"]):
+        return "User"    # picking User over other objects to handle User, Group as assigned to keys (org always uses User)
+    if "Contact" in str(row["referenceTo"]):
+        return "Contact" # picking Contact over other objects to handle Lead, Contact situation (org almost always uses Contact)
     return str(row["referenceTo"]).split()[0].replace("'","").replace("[","").replace("]","").replace(",","") # from SF some objects point at all other objects -- which breaks cookbook
 # Sets "Id" as Ref Col to reflect SF convention
 def getRefCol(row):
