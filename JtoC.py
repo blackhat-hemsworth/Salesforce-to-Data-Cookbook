@@ -11,6 +11,11 @@ tz = pytz.timezone('US/Central')
 ct_start = datetime.datetime.now(tz) 
 print("script started at:", ct_start)
 
+
+SchemaName = "EDA" # select based on Cookbook syntax
+JSONname = "example-output.json" # based on input file
+
+
 ## functions for csv cols
 # Used for each "picklist" to return a list of "labels - values" sep. by \n
 def picklistLabels(br):
@@ -28,8 +33,8 @@ def PKfinder(row):
     if row["type"] == "id" :
         return "TRUE"
     return ''
-# Used to convert to Data Cookbook "column" vs. "id" type
-def getType(row):
+# Used to convert to Data Cookbook "column" vs. "id" type -- Since Indexes can't be linked to in Diagram, making those Columns/PKs
+#def getType(row):
     if row["type"] == "id":
         return "Index"
     return "Column"
@@ -46,6 +51,11 @@ def getRefCol(row):
     if len(str(row["referenceTo"])) > 2 :
         return "Id"
     return ''
+# sets SchemaName as Reference Model for Data cookbook processing
+def getRefModel(row):
+    if len(str(row["referenceTo"])) > 2 :
+        return SchemaName
+    return ''
 # Sets "Comment" field for Cookbook, which here contains help text + picklist vals (helpful for our org) 
 def commentMaker(row, dict):
     pl = ""
@@ -58,7 +68,7 @@ def commentMaker(row, dict):
 
 #open file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-f = open('example-output.json')
+f = open(JSONname)
 sch = json.load(f)
 
 # making directories
@@ -68,14 +78,13 @@ pathlib.Path("picklists").mkdir(parents=True, exist_ok=True)
 
 dfU = None
 dfPL = None
-# loops through every table in the json 
 for table in sch.keys():
     #tcomment = '' # can be used to set table comment -- org specific plan for this
     #print("Formatting " + table)  #debugging, seems to cost about 1 sec/100 tables 
 
     ### used to create csv from JSON raw data, for better legibility. CSVs will be zipped
     fields = pd.DataFrame.from_dict(sch[table]["fields"], orient='index')
-    fields.to_csv("unaltered/unalt____" + table + ".csv") # I copied SF's multi-underscore format but you could (perhaps should) name this another way
+    fields.to_csv("unaltered/unalt____" + table + ".csv")
     
     if len(fields.index) < 2:  # cookbook won't take tables with only an "Id" column (unclear why they exist in SF anyhow)
         continue
@@ -90,7 +99,6 @@ for table in sch.keys():
                             "Help Text": Pfields["inlineHelpText"],
                             "Label - Value": Pfields.apply(lambda row: picklistLabels(sch[table]["fields"][row["name"]]["picklistValues"]), axis=1)  
                             })
-
     if dfPL is None: 
             dfPL = dfPLi
     else: 
@@ -99,17 +107,16 @@ for table in sch.keys():
     ### used to create CSV for the data cookbook
     ### cols/orders/etc. all as per data cookbook spec -- https://stthomas.datacookbook.com/doc/Data_Cookbook_User_Guide.pdf#page=141
     #  tcomment = '' # set for table -- org specific plan for this one
-    dfParent = pd.DataFrame({"Schema":["EDA"], 
+    dfParent = pd.DataFrame({"Schema": SchemaName, # depends on DC syntax
                 "Object Type": ["Table"], 
                 "Object Name":table,
                 "Parent Object Type":["Schema"],
-                "Parent Object Name":["EDA"],
+                "Parent Object Name": SchemaName,
                 "Row Count":'',
                 "Comment": '' #tcomment
                 })
-
-    dfKids = pd.DataFrame({"Schema":"EDA", # depends on DC syntax
-                        "Object Type": fields.apply(lambda row: getType(row), axis=1), 
+    dfKids = pd.DataFrame({"Schema": SchemaName, 
+                        "Object Type": "Column", #fields.apply(lambda row: getType(row), axis=1), 
                         "Object Name":fields["name"],
                         "Parent Object Type":"Table",
                         "Parent Object Name":table,
@@ -124,7 +131,8 @@ for table in sch.keys():
                         "Columns":'',
                         "Code":'',
                         "Unique": fields.apply(lambda row: PKfinder(row), axis=1), # indexes only
-                        "Foreign Key":fields["relationshipName"],
+                        "Foreign Key Name":fields["relationshipName"],
+                        "Reference Model": fields.apply(lambda row: getRefModel(row), axis=1), #FKs only
                         "Reference Table": fields.apply(lambda row: getRef(row), axis=1), #FKs only
                         "Reference Column": fields.apply(lambda row: getRefCol(row), axis=1) #FKs only
                         })
@@ -134,8 +142,8 @@ for table in sch.keys():
         dfU = pd.concat([dfU, dfParent], axis=0, ignore_index=True)
         dfU = pd.concat([dfU,dfKids], axis=0, ignore_index=True)
 
-### saving output to csv 
-dfU.to_csv("DFformat/EDA.csv", index=False)
+### saving outputs
+dfU.to_csv("DFformat/" + SchemaName + ".csv", index=False)
 dfPL.to_csv("picklists/PicklistSpecs.csv", index=False)
 shutil.make_archive("JSON_fields_unaltered", 'zip', "unaltered")
 
