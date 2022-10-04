@@ -12,11 +12,13 @@ ct_start = datetime.datetime.now(tz)
 print("script started at:", ct_start)
 
 
+#### CONFIGURABLE VARIABLES
 SchemaName = "EDA" # select based on Cookbook syntax
 JSONname = "example-output.json" # based on input file
+tableListJSON = "TableList.json" # config input file name
 
 
-## functions for csv cols
+#### FUNCTIONS
 # Used for each "picklist" to return a list of "labels - values" sep. by \n
 def picklistLabels(br):
     if not br:
@@ -57,29 +59,48 @@ def getRefModel(row):
         return SchemaName
     return ''
 # Sets "Comment" field for Cookbook, which here contains help text + picklist vals (helpful for our org) 
-def commentMaker(row, dict):
+def commentMaker(row, dict, RecordTypes):
+    global AKList
     pl = ""
     ht = ""
+    # logging if Alternate Key
+    if ((row["type"]!="id") & (row["nillable"] == True) & (row["unique"] == True)):
+            AKList = row["name"] + ", " + AKList
+    # making comment
     if (row["type"] == "picklist") | (row["type"] == "multipicklist"):
-        pl = "Picklist Items: " + picklistLabels(dict[table]["fields"][row["name"]]["picklistValues"]) 
+        pl = "Picklist Items: " + picklistLabels(dict[table]["fields"][row["name"]]["picklistValues"]) # gets list of values sep by \n, to be cleaned later
+    if ( (row["name"]=="RecordTypeId") & (len(RecordTypes.index) != 0) ):
+        pl = "Record Type IDs - Developer Names: " + ' / '.join(RecordTypes["keyList"]) # gets list of values sep by /
     if row["inlineHelpText"] is not None:
         ht = "Help Text: " + str(row["inlineHelpText"]) + " | " 
     return (ht + pl).replace("\n","/")[:1000].strip(" | ")
 
-#open file
+
+### FOLDER SETUP
+#open JSON
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 f = open(JSONname)
 sch = json.load(f)
+f2 = open(tableListJSON)
+tableList = json.load(f2)
 
 # making directories
 pathlib.Path("unaltered").mkdir(parents=True, exist_ok=True) 
 pathlib.Path("DFformat").mkdir(parents=True, exist_ok=True) 
 pathlib.Path("picklists").mkdir(parents=True, exist_ok=True) 
 
+### REFORMATTING JSON 
 dfU = None
 dfPL = None
 for table in sch.keys():
-    #tcomment = '' # can be used to set table comment -- org specific plan for this
+    tcomment = '' # can be used to set table comment -- org specific plan for this
+    AKList = ''
+    RecordTypes = pd.DataFrame()
+
+    if len(sch[table]["recordTypeInfos"]) > 2 :
+        RecordTypes = pd.DataFrame.from_dict(sch[table]["recordTypeInfos"])
+        RecordTypes["keyList"] = RecordTypes["recordTypeId"] + " - " + RecordTypes["developerName"] 
+        #print(RecordTypes["keyList"])
     #print("Formatting " + table)  #debugging, seems to cost about 1 sec/100 tables 
 
     ### used to create csv from JSON raw data, for better legibility. CSVs will be zipped
@@ -106,22 +127,14 @@ for table in sch.keys():
 
     ### used to create CSV for the data cookbook
     ### cols/orders/etc. all as per data cookbook spec -- https://stthomas.datacookbook.com/doc/Data_Cookbook_User_Guide.pdf#page=141
-    #  tcomment = '' # set for table -- org specific plan for this one
-    dfParent = pd.DataFrame({"Schema": SchemaName, # depends on DC syntax
-                "Object Type": ["Table"], 
-                "Object Name":table,
-                "Parent Object Type":["Schema"],
-                "Parent Object Name": SchemaName,
-                "Row Count":'',
-                "Comment": '' #tcomment
-                })
+    ## create df for all of the fields associated with the object
     dfKids = pd.DataFrame({"Schema": SchemaName, 
                         "Object Type": "Column", #fields.apply(lambda row: getType(row), axis=1), 
                         "Object Name":fields["name"],
                         "Parent Object Type":"Table",
                         "Parent Object Name":table,
                         "Row Count":'',
-                        "Comment":fields.apply(lambda row: commentMaker(row, sch), axis=1),#### use later for ODS / SF conversion?
+                        "Comment":fields.apply(lambda row: commentMaker(row, sch, RecordTypes), axis=1),#### use later for ODS / SF conversion?
                         "Data Type":fields["type"],
                         "Length": fields["length"],
                         "Primary Key":fields.apply(lambda row: PKfinder(row), axis=1),
@@ -136,13 +149,32 @@ for table in sch.keys():
                         "Reference Table": fields.apply(lambda row: getRef(row), axis=1), #FKs only
                         "Reference Column": fields.apply(lambda row: getRefCol(row), axis=1) #FKs only
                         })
+    ## Create row for the table object/comment/etc. 
+    if table in tableList.keys():
+        tcomment = "ODS (https://stthomas.datacookbook.com/institution/data_systems/5044/schemas/2181) table name: " + tableList[table] + " | " # set for table -- org specific plan for this one
+    if len(RecordTypes.index)!=0:
+        tcomment = tcomment  + "Possible Record Types (Controlled by RecordTypeId for Each Record): " + ', '.join(RecordTypes["developerName"]) + " | "
+        tcomment.strip(" | ")
+    if (AKList != ''):
+        tcomment = tcomment + "Alternate Keys: " + AKList.strip(", ")
+        tcomment.strip(" | ")
+    dfParent = pd.DataFrame({"Schema": SchemaName, # depends on DC syntax
+                "Object Type": ["Table"], 
+                "Object Name":table,
+                "Parent Object Type":["Schema"],
+                "Parent Object Name": SchemaName,
+                "Row Count":'',
+                "Comment": tcomment
+                })
+
     if dfU is None: 
         dfU = pd.concat([dfParent, dfKids], axis=0, ignore_index=True)
     else: 
         dfU = pd.concat([dfU, dfParent], axis=0, ignore_index=True)
         dfU = pd.concat([dfU,dfKids], axis=0, ignore_index=True)
 
-### saving outputs
+
+### SAVING OUTPUT
 dfU.to_csv("DFformat/" + SchemaName + ".csv", index=False)
 dfPL.to_csv("picklists/PicklistSpecs.csv", index=False)
 shutil.make_archive("JSON_fields_unaltered", 'zip', "unaltered")
