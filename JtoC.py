@@ -40,6 +40,11 @@ def PKfinder(row):
     if row["type"] == "id":
         return "Index"
     return "Column"
+# Used to get type
+def getType(row):
+    if row["calculated"]:
+        return row["type"] + " (calculated)"
+    return row["type"]
 # Used to reduce reference column to first entry -- not ideal but DC's 
 # ERP diagram/linking only works with one table referenced per FK
 def getRef(row):
@@ -63,6 +68,7 @@ def commentMaker(row, dict, RecordTypes):
     global AKList
     pl = ""
     ht = ""
+    fm = ""
     # logging if Alternate Key
     if ((row["type"]!="id") & (row["nillable"] == True) & (row["unique"] == True)):
             AKList = row["name"] + ", " + AKList
@@ -73,8 +79,9 @@ def commentMaker(row, dict, RecordTypes):
         pl = "Record Type IDs - Developer Names: " + ' / '.join(RecordTypes["keyList"]) # gets list of values sep by /
     if row["inlineHelpText"] is not None:
         ht = "Help Text: " + str(row["inlineHelpText"]) + " | " 
-    return (ht + pl).replace("\n","/")[:1000].strip(" | ")
-
+    if row["calculated"]:
+        fm = "Formula: " + str(row["calculatedFormula"]) + " | "
+    return (ht + fm + pl).replace("\n","/")[:1000].strip(" | ")
 
 ### FOLDER SETUP
 #open JSON
@@ -135,7 +142,7 @@ for table in sch.keys():
                         "Parent Object Name":table,
                         "Row Count":'',
                         "Comment":fields.apply(lambda row: commentMaker(row, sch, RecordTypes), axis=1),#### use later for ODS / SF conversion?
-                        "Data Type":fields["type"],
+                        "Data Type":fields.apply(lambda row: getType(row), axis=1),
                         "Length": fields["length"],
                         "Primary Key":fields.apply(lambda row: PKfinder(row), axis=1),
                         "Precision":'',
