@@ -6,6 +6,7 @@ import os
 import json
 import shutil
 import pathlib
+import re
 
 tz = pytz.timezone('US/Central')  
 ct_start = datetime.datetime.now(tz) 
@@ -81,7 +82,9 @@ def commentMaker(row, dict, RecordTypes):
         ht = "Help Text: " + str(row["inlineHelpText"]) + " | " 
     if row["calculated"]:
         fm = "Formula: " + str(row["calculatedFormula"]) + " | "
-    return (ht + fm + pl).replace("\n","/")[:1000].strip(" | ")
+    val = (ht + fm + pl).replace("\n","/")[:1000].strip(" | ")
+    return re.sub(r'(?<=[.,])(?=[^\s])', r' ', val) 
+
 
 ### FOLDER SETUP
 #open JSON
